@@ -10,8 +10,9 @@ class Collection(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField()
     description = models.TextField()
-    price = models.DecimalField(max_digits=8, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=8, decimal_places=2)
     inventory = models.PositiveIntegerField()
     last_updated = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
