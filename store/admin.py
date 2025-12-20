@@ -1,8 +1,11 @@
 from django.contrib import admin, messages
 from django.db.models import Count
+from django.template.defaultfilters import title
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
 from . import models
+from .models import OrderItem
+
 
 class InventoryFilter(admin.SimpleListFilter):
     title = 'Inventory'
@@ -33,6 +36,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['unit_price']
     list_per_page = 10
     list_select_related = ['collection']
+
+    search_fields = ['title__icontains']
 
     list_filter = ['collection', 'last_updated', InventoryFilter]
     actions = ['clear_inventory']
@@ -65,6 +70,13 @@ class ProductAdmin(admin.ModelAdmin):
             messages.SUCCESS
         )
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    autocomplete_fields = ['product']
+    extra = 1
+    min_num = 1
+    max_num = 10
+
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer_name', 'payment_status']
@@ -73,6 +85,8 @@ class OrderAdmin(admin.ModelAdmin):
     list_select_related = ['customer']
 
     autocomplete_fields = ['customer']
+
+    inlines = [OrderItemInline]
 
     @admin.display(ordering='customer')
     def customer_name(self, order):
