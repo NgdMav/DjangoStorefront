@@ -33,8 +33,14 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['unit_price']
     list_per_page = 10
     list_select_related = ['collection']
+
     list_filter = ['collection', 'last_updated', InventoryFilter]
     actions = ['clear_inventory']
+
+    prepopulated_fields = {
+        'slug': ['title']
+    }
+    autocomplete_fields = ['collection']
 
     @admin.display(ordering='inventory')
     def inventory_status(self, product):
@@ -99,6 +105,8 @@ class CollectionAdmin(admin.ModelAdmin):
     list_display = ['title', 'featured_product', 'products_count']
     list_editable = ['featured_product']
     list_per_page = 10
+
+    search_fields = ['title']
     @admin.display(ordering='products_count')
     def products_count(self, collection):
         url = (reverse('admin:store_product_changelist')
