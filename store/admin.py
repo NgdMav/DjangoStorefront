@@ -2,8 +2,30 @@ from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
-
 from . import models
+
+class InventoryFilter(admin.SimpleListFilter):
+    title = 'Inventory'
+    parameter_name = 'inventory'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('0', 'No Inventory'),
+            ('<10', 'Low'),
+            ('>=10&<50', 'Medium'),
+            ('>=50', 'High')
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == '0':
+            return queryset.filter(inventory=0)
+        if self.value() == '<10':
+            return queryset.filter(inventory__lt=10)
+        if self.value() == '>=10&<50':
+            return queryset.filter(inventory__gte=10).filter(inventory__lt=50)
+        if self.value() == '>=50':
+            return queryset.filter(inventory__gte=50)
+        return None
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -11,12 +33,17 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['unit_price']
     list_per_page = 10
     list_select_related = ['collection']
+    list_filter = ['collection', 'last_updated', InventoryFilter]
 
     @admin.display(ordering='inventory')
     def inventory_status(self, product):
+        if product.inventory == 0:
+            return 'No Inventory'
         if product.inventory < 10:
             return 'Low'
-        return 'Medium'
+        if product.inventory < 50:
+            return 'Medium'
+        return 'High'
 
     @admin.display(ordering='collection')
     def collection_title(self, product):
