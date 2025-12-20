@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
@@ -34,6 +34,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_select_related = ['collection']
     list_filter = ['collection', 'last_updated', InventoryFilter]
+    actions = ['clear_inventory']
 
     @admin.display(ordering='inventory')
     def inventory_status(self, product):
@@ -48,6 +49,15 @@ class ProductAdmin(admin.ModelAdmin):
     @admin.display(ordering='collection')
     def collection_title(self, product):
         return product.collection.title
+
+    @admin.action(description='Clear Inventory')
+    def clear_inventory(self, request, queryset):
+        updated_count = queryset.update(inventory=0)
+        self.message_user(
+            request,
+            f'{updated_count} Products Successfully Updated',
+            messages.SUCCESS
+        )
 
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
