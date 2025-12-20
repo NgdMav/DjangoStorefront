@@ -72,6 +72,8 @@ class OrderAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_select_related = ['customer']
 
+    autocomplete_fields = ['customer']
+
     @admin.display(ordering='customer')
     def customer_name(self, order):
         return order.customer.first_name + ' ' + order.customer.last_name
