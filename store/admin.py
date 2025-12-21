@@ -142,3 +142,15 @@ class CollectionAdmin(admin.ModelAdmin):
                 .get_queryset(request)
                 .annotate(products_count=Count('product'))
                 )
+
+@admin.register(models.OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order_id', 'order_product', 'quantity', 'unit_price']
+
+    list_select_related = ['product']
+
+    def order_product(self, order_item):
+        url = (reverse('admin:store_product_changelist')
+               + str(order_item.product.id)
+               )
+        return format_html('<a href="{}">{}</a>', url, order_item.product.title)
