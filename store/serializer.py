@@ -5,14 +5,9 @@ from store.models import Product, Collection
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['id', 'title', 'products_count']
+        fields = ['id', 'title', 'products_count', 'featured_product']
 
-    products_count = serializers.IntegerField()
-
-class CollectionCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Collection
-        fields = ['id', 'title']
+    products_count = serializers.IntegerField(read_only=True)
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
