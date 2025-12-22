@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.pagination import PageNumberPagination
 
 from store.filters import ProductFilter
 from store.models import Product, Collection, OrderItem, Review
@@ -59,6 +58,10 @@ class CollectionViewSet(ModelViewSet):
         products_count=Count('products')).all()
     serializer_class = CollectionSerializer
 
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['title']
+    ordering_fields = ['id', 'title', 'products_count']
+
     pagination_class = DefaultPagination
 
     def get_serializer_context(self):
@@ -93,6 +96,12 @@ class CollectionViewSet(ModelViewSet):
 
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
+
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['id', 'name', 'date']
+
+    pagination_class = DefaultPagination
 
     def get_queryset(self) -> QuerySet:
         return Review.objects.filter(product_id=self.kwargs['product_pk']).all()
