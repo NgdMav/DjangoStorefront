@@ -53,7 +53,7 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'items', 'total_price']
-    items = CartItemSerializer(many=True)
+    items = CartItemSerializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField(method_name='get_total_price')
 
     def get_total_price(self, cart: CartItem) -> Decimal:

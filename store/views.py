@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 from store.filters import ProductFilter
@@ -112,9 +112,17 @@ class ReviewViewSet(ModelViewSet):
 
 class CartViewSet(CreateModelMixin,
                   RetrieveModelMixin,
+                  DestroyModelMixin,
                   GenericViewSet):
     queryset = Cart.objects.prefetch_related('items__product').all()
     serializer_class = CartSerializer
+
+    # This is if you want user to not delete a cart with items
+    # def destroy(self, request, *args, **kwargs) -> Response:
+    #     if CartItem.objects.filter(cart_id=kwargs.get('pk')).count() > 0:
+    #         return Response({"error": "Cart cannot be deleted because it's associated with an cart item"},
+    #                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    #     return super().destroy(request, *args, **kwargs)
 
 class CartItemViewSet(ModelViewSet):
     queryset = CartItem.objects.select_related('product').annotate(
