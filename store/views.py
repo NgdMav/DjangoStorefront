@@ -1,4 +1,4 @@
-from django.db.models import Count, QuerySet, F, Sum
+from django.db.models import Count, QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.response import Response
@@ -9,7 +9,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from store.filters import ProductFilter
 from store.models import Product, Collection, OrderItem, Review, Cart, CartItem
 from store.pagination import DefaultPagination
-from store.serializer import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer
+from store.serializer import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, \
+    CartItemSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -120,11 +121,12 @@ class CartViewSet(CreateModelMixin,
     # This is if you want user to not delete a cart with items
     # def destroy(self, request, *args, **kwargs) -> Response:
     #     if CartItem.objects.filter(cart_id=kwargs.get('pk')).count() > 0:
-    #         return Response({"error": "Cart cannot be deleted because it's associated with an cart item"},
+    #         return Response({"error": "Cart cannot be deleted because it's associated with a cart item"},
     #                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
     #     return super().destroy(request, *args, **kwargs)
 
 class CartItemViewSet(ModelViewSet):
-    queryset = CartItem.objects.select_related('product').annotate(
-        total_price=F('quantity') * F('product__unit_price')
-    ).all()
+    serializer_class = CartItemSerializer
+
+    def get_queryset(self) -> QuerySet:
+        return CartItem.objects.select_related('product').filter(cart_id=self.kwargs['cart_pk']).all()
