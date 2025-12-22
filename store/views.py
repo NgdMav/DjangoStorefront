@@ -47,7 +47,7 @@ class ProductViewSet(ModelViewSet):
 #
 #     def delete(self, *args, **kwargs):
 #         product = get_object_or_404(Product, id=kwargs.get('pk'))
-#         if product.orderitems.count() > 0:
+#         if product.order_items.count() > 0:
 #             return Response({"error": "Product cannot be deleted because it's associated with an order item"},
 #                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
 #         product.delete()
