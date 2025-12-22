@@ -32,14 +32,29 @@ class ReviewSerializer(serializers.ModelSerializer):
         product_id = self.context['product_id']
         return Review.objects.create(product_id=product_id, **validated_data)
 
-class CartSerializer(serializers.ModelSerializer):
+class SimpleProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cart
-        fields = ['id', 'items_count']
-
-    items_count = serializers.IntegerField(read_only=True)
+        model = Product
+        fields = ['id', 'title', 'unit_price']
 
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity']
+        fields = ['id', 'product', 'quantity', 'total_price']
+
+    product = SimpleProductSerializer(read_only=True)
+    total_price = serializers.SerializerMethodField(method_name='get_total_price')
+
+    def get_total_price(self, item: CartItem) -> Decimal:
+        return item.quantity * item.product.unit_price
+
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = ['id', 'items', 'total_price']
+    items = CartItemSerializer(many=True)
+    total_price = serializers.SerializerMethodField(method_name='get_total_price')
+
+    def get_total_price(self, cart: CartItem) -> Decimal:
+        return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
