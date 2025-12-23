@@ -10,11 +10,12 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
 
 from store.filters import ProductFilter
-from store.models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer
+from store.models import Product, Collection, OrderItem, Review, Cart, CartItem, Customer, Order
 from store.pagination import DefaultPagination
 from store.permissions import IsAdminOrReadOnly, ViewCustomerHistoryPermission
 from store.serializer import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, \
-    CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
+    CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer, OrderSerializer, \
+    CreateCustomerSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -107,7 +108,10 @@ class CartItemViewSet(ModelViewSet):
 
 class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateCustomerSerializer
+        return CustomerSerializer
     permission_classes = [IsAdminUser]
 
     @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
@@ -125,3 +129,14 @@ class CustomerViewSet(ModelViewSet):
     @action(detail=True, permission_classes=[ViewCustomerHistoryPermission])
     def history(self, request: Request, pk) -> Response:
         return Response("ok")
+
+class OrderViewSet(ModelViewSet):
+    serializer_class = OrderSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet:
+        if self.request.user.is_staff:
+            return Order.objects.select_related('customer__user').prefetch_related('items__product').all()
+        customer_id, _ = Customer.objects.only('id').get_or_create(user_id=self.request.user.id)
+        return Order.objects.select_related('customer__user').prefetch_related('items__product').filter(customer_id=customer_id).all()
