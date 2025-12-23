@@ -48,7 +48,6 @@ class CartItemSerializer(serializers.ModelSerializer):
     def get_total_price(self, item: CartItem) -> Decimal:
         return item.quantity * item.product.unit_price
 
-
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart

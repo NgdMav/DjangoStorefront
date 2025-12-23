@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'tags.apps.TagsConfig',
     'likes.apps.LikesConfig',
-    'store_custom.apps.StoreCustomConfig'
+    'core.apps.CoreConfig'
 ]
 
 MIDDLEWARE = [
@@ -138,3 +138,5 @@ STATIC_URL = 'static/'
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False,
 }
+
+AUTH_USER_MODEL = 'core.User'
