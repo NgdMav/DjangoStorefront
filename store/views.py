@@ -15,7 +15,7 @@ from store.pagination import DefaultPagination
 from store.permissions import IsAdminOrReadOnly, ViewCustomerHistoryPermission
 from store.serializer import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, \
     CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer, OrderSerializer, \
-    CreateCustomerSerializer
+    CreateCustomerSerializer, CreateOrderSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -140,3 +140,12 @@ class OrderViewSet(ModelViewSet):
             return Order.objects.select_related('customer__user').prefetch_related('items__product').all()
         customer_id, _ = Customer.objects.only('id').get_or_create(user_id=self.request.user.id)
         return Order.objects.select_related('customer__user').prefetch_related('items__product').filter(customer_id=customer_id).all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        return OrderSerializer
+
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.id,
+                'cart_id': self.kwargs.get('cart_pk')}
