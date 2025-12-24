@@ -123,7 +123,7 @@ class CustomerViewSet(ModelViewSet):
 
     @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
     def me(self, request: Request) -> Response:
-        (customer, created) = Customer.objects.get_or_create(user_id=request.user.id)
+        customer = Customer.objects.get(user_id=request.user.id)
         if request.method == 'GET':
             return Response(CustomerSerializer(customer).data)
         elif request.method == 'PUT':
@@ -145,7 +145,7 @@ class OrderViewSet(ModelViewSet):
     def get_queryset(self) -> QuerySet:
         if self.request.user.is_staff:
             return Order.objects.select_related('customer__user').prefetch_related('items__product').all()
-        customer_id, _ = Customer.objects.only('id').get_or_create(user_id=self.request.user.id)
+        customer_id = Customer.objects.only('id').get(user_id=self.request.user.id)
         return Order.objects.select_related('customer__user').prefetch_related('items__product').filter(customer_id=customer_id).all()
 
     def get_serializer_class(self):
