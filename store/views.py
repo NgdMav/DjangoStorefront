@@ -1,7 +1,7 @@
 from django.db.models import Count, QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -65,6 +65,8 @@ class CollectionViewSet(ModelViewSet):
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
 
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'description']
     ordering_fields = ['id', 'name', 'date']
@@ -84,6 +86,8 @@ class CartViewSet(CreateModelMixin,
     queryset = Cart.objects.prefetch_related('items__product').all()
     serializer_class = CartSerializer
 
+    permission_classes = [AllowAny]
+
     # This is if you want user to not delete a cart with items
     # def destroy(self, request, *args, **kwargs) -> Response:
     #     if CartItem.objects.filter(cart_id=kwargs.get('pk')).count() > 0:
@@ -93,6 +97,9 @@ class CartViewSet(CreateModelMixin,
 
 class CartItemViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
+
+    permission_classes = [AllowAny]
+
     def get_queryset(self) -> QuerySet:
         return CartItem.objects.select_related('product').filter(cart_id=self.kwargs['cart_pk']).all()
 
@@ -128,12 +135,12 @@ class CustomerViewSet(ModelViewSet):
 
     @action(detail=True, permission_classes=[ViewCustomerHistoryPermission])
     def history(self, request: Request, pk) -> Response:
-        return Response("ok")
+        return Response({'pk': pk})
 
 class OrderViewSet(ModelViewSet):
-    serializer_class = OrderSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
 
-    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
 
     def get_queryset(self) -> QuerySet:
         if self.request.user.is_staff:
@@ -154,3 +161,8 @@ class OrderViewSet(ModelViewSet):
         order = serializer.save()
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
