@@ -19,7 +19,7 @@ from store.serializer import ProductSerializer, CollectionSerializer, ReviewSeri
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related('images').all()
     serializer_class = ProductSerializer
 
     permission_classes = [IsAdminOrReadOnly]
