@@ -5,6 +5,9 @@ from django.contrib import admin
 
 import uuid
 
+from store.validators import validate_file_size
+
+
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
     discount = models.FloatField()
@@ -41,7 +44,10 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='store/images/')
+    image = models.ImageField(
+        upload_to='store/images/',
+        validators=[validate_file_size],
+    )
 
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
