@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "storefront"
+version = "0.1.0"
+description = "Django e-commerce store"
+authors = [{name = "Mav", email = "mav@example.com"}]
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "Django>=6.0,<7.0",
+    "djangorestframework>=3.14,<4.0",
+    "djangorestframework-simplejwt>=5.3,<6.0",
+    "djoser>=2.2,<3.0",
+    "psycopg2>=2.9,<3.0",
+    "Pillow>=12.0,<13.0",
+    "django-filter>=23.0,<26.0",
+    "django-cors-headers>=4.0,<5.0",
+    "celery>=5.3,<6.0",
+    "redis>=7.0,<8.0",
+    "social-auth-app-django>=5.6,<6.0",
+    "social-auth-core>=4.7,<5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4,<10.0",
+    "pytest-django>=4.5,<5.0",
+    "pytest-watch>=4.2,<5.0",
+    "model-bakery>=1.20,<2.0",
+    "locust>=2.20,<3.0",
+    "django-debug-toolbar>=6.0,<7.0",
+    "django-silk>=5.4,<6.0",
+    "django-stubs>=5.0,<6.0",
+    "django-stubs-ext>=5.0,<6.0",
+    "djangorestframework-stubs>=3.14,<4.0",
+    "black>=24.0,<25.0",
+    "flake8>=7.0,<8.0",
+    "isort>=5.12,<6.0",
+]
+
+[project.scripts]
+manage = "manage:main"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["store/tests", "playground/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+DJANGO_SETTINGS_MODULE = "storefront.settings"

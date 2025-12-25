@@ -1,5 +1,6 @@
+from django.core.cache import cache
 from django.shortcuts import render
-from .tasks import notify_customers
+import requests
 
 def say_hello(request):
     # try:
@@ -23,5 +24,10 @@ def say_hello(request):
     #     message.send(['xivalor@domain.com'])
     # except BadHeaderError:
     #     pass
-    notify_customers.delay('Hello, celery')
-    return render(request, 'hello.html', {"name": "Mav"})
+    # notify_customers.delay('Hello, celery')
+    key = 'httpbin_result'
+    if cache.get(key) is None:
+        response = requests.get('https://httpbin.org/delay/2')
+        data = response.json()
+        cache.set(key, data)
+    return render(request, 'hello.html', {"name": cache.get(key)})
