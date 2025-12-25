@@ -180,3 +180,5 @@ ADMINS = [
     ('Mav', 'mav@gmail.com'),
     ('admin', 'admin@domain.com')
 ]
+
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
