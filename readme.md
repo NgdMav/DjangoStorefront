@@ -27,4 +27,9 @@ locust -f locustfiles/browse_products.py
 ## Redis for caching hard data:
 ```text
 sudo docker run -d -p 6379:6379 redis
+
+sudo docker exec -it *cont* redis-cli
+select 2
+keys *
+flushall // for deleting all keys
 ```

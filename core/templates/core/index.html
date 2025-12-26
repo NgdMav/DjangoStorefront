@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Store - Home</title>
+    <link rel="stylesheet" href="{% static 'core/styles.css' %}">
+</head>
+<body>
+    <div class="home-page">
+        <img src="{% static 'core/logo.svg' %}" alt="Django Store Logo" class="logo">
+
+        <div class="content fade-in">
+            <h1 class="title">Welcome to Django Store</h1>
+            <p class="subtitle">A modern e-commerce platform built with Django and React.
+               Fast, secure, and scalable for your online business needs.</p>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h3 class="feature-title">Lightning Fast</h3>
+                    <p class="feature-description">Optimized for performance with Django REST framework and PostgreSQL.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">Secure</h3>
+                    <p class="feature-description">JWT authentication, CSRF protection, and secure payment processing.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">Responsive</h3>
+                    <p class="feature-description">Fully responsive design that works on all devices from mobile to desktop.</p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Uptime</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Support</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">99.9%</span>
+                    <span class="stat-label">Satisfaction</span>
+                </div>
+            </div>
+
+            <button class="cta-button" onclick="window.location.href='/admin/'">
+                <span>Get Started →</span>
+            </button>
+        </div>
+
+        <div class="footer">
+            <p>© <span class="current-year">2025</span> Django Store. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="/admin/" class="footer-link">Admin</a>
+                <a href="/store/" class="footer-link">Store</a>
+                <a href="/docs/" class="footer-link">Documentation</a>
+                <a href="https://github.com/NgdMav/DjangoStorefront" class="footer-link">GitHub</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
