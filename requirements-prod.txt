@@ -1,0 +1,71 @@
+# Core Django
+Django==6.0
+asgiref==3.11.0
+sqlparse==0.5.5
+
+# Database
+psycopg2==2.9.11
+
+# REST Framework
+djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
+djoser==2.3.3
+drf-nested-routers==0.95.0
+
+# Authentication & Security
+PyJWT==2.10.1
+social-auth-app-django==5.7.0
+social-auth-core==4.8.3
+oauthlib==3.3.1
+requests-oauthlib==2.0.0
+python3-openid==3.2.0
+defusedxml==0.7.1
+cryptography==46.0.3
+certifi==2025.11.12
+
+# Media & Images
+pillow==12.0.0
+
+# CORS
+django-cors-headers==4.9.0
+
+# Filtering
+django-filter==25.2
+
+# Email
+django-templated-mail==1.1.1
+
+# Async & Workers
+celery==5.6.0
+amqp==5.3.1
+kombu==5.6.1
+vine==5.1.0
+billiard==4.2.4
+
+# Cache & Redis
+redis==7.1.0
+django-redis==6.0.0
+
+# Static files
+whitenoise==6.11.0
+
+# Utilities
+python-dateutil==2.9.0.post0
+pytz==2025.2
+tzdata==2025.3
+tzlocal==5.3.1
+six==1.17.0
+packaging==25.0
+platformdirs==4.5.1
+blinker==1.9.0
+
+# HTTP & Networking
+requests==2.32.5
+urllib3==2.6.2
+idna==3.11
+charset-normalizer==3.4.4
+brotli==1.2.0
+
+# Compression
+cffi==2.0.0
+pycparser==2.23

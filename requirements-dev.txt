@@ -1,0 +1,83 @@
+# Production dependencies
+-r prod.txt
+
+# Testing
+pytest==9.0.2
+pytest-django==4.11.1
+pytest-watch==4.2.0
+model-bakery==1.20.5
+iniconfig==2.3.0
+pluggy==1.6.0
+exceptiongroup==1.3.1
+
+# Profiling & Debugging
+django-debug-toolbar==6.1.0
+django-silk==5.4.3
+gprof2dot==2025.4.14
+
+# Type checking
+django-stubs==5.2.8
+django-stubs-ext==5.2.8
+djangorestframework-stubs==3.16.6
+celery-types==0.24.0
+types-PyYAML==6.0.12.20250915
+types-requests==2.32.4.20250913
+typing_extensions==4.15.0
+
+# Load testing
+locust==2.42.6
+locust-cloud==1.30.0
+
+# Monitoring tools
+flower==2.0.1
+prometheus_client==0.23.1
+
+# Development tools
+watchdog==6.0.0
+ipython==9.8.0  # Добавьте это
+django-extensions==4.1  # Добавьте это
+black==25.12.0  # Добавьте это для форматирования
+
+# Flask apps (для flower, locust dashboard)
+Flask==3.1.2
+flask-cors==6.0.2
+Flask-Login==0.6.3
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+Werkzeug==3.1.4
+itsdangerous==2.2.0
+click==8.3.1
+click-didyoumean==0.3.1
+click-plugins==1.1.1.2
+click-repl==0.3.0
+
+# Async/WebSocket tools (для flower/locust)
+gevent==25.9.1
+geventhttpclient==2.3.7
+greenlet==3.3.0
+tornado==6.5.4
+simple-websocket==1.1.0
+websocket-client==1.9.0
+python-engineio==4.13.0
+python-socketio==5.16.0
+h11==0.16.0
+wsproto==1.3.2
+msgpack==1.1.2
+pyzmq==27.1.0
+
+# System tools
+psutil==7.2.0
+humanize==4.15.0
+
+# CLI tools
+colorama==0.4.6
+ConfigArgParse==1.7.1
+docopt==0.6.2
+prompt_toolkit==3.0.52
+Pygments==2.19.2
+wcwidth==0.2.14
+
+# Zope components (для некоторых инструментов)
+zope.event==6.1
+zope.interface==8.1.1
+bidict==0.23.1
