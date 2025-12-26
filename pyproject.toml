@@ -88,6 +88,8 @@ dependencies = [
     "idna>=3.11,<4.0",
     "charset-normalizer>=3.4,<4.0",
     "brotli>=1.2,<2.0",
+
+    "gunicorn>=23.0.0"
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,166 @@
+version: '3.9'
+services:
+  web:
+    build: .
+    container_name: django_storefront
+    command: >
+      sh -c "./wait-for-it.sh postgres:5432 -- 
+             python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+      - smtp4dev
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    env_file:
+      - .env.docker
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/storefront
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - EMAIL_HOST=smtp4dev
+      - EMAIL_PORT=25
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  celery:
+    build: .
+    container_name: celery_worker
+    command: celery -A storefront worker --loglevel=info --concurrency=4
+    depends_on:
+      - redis
+      - postgres
+      - web
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    env_file:
+      - .env.docker
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/storefront
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - app-network
+
+  celery-beat:
+    build: .
+    container_name: celery_beat
+    command: celery -A storefront beat --loglevel=info
+    depends_on:
+      - redis
+      - postgres
+      - web
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    env_file:
+      - .env.docker
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/storefront
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - app-network
+
+  flower:
+    build: .
+    container_name: flower_monitor
+    command: celery -A storefront flower --port=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    env_file:
+      - .env.docker
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    networks:
+      - app-network
+  postgres:
+    image: postgres:18.1-alpine
+    container_name: postgres_db
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DATABASE=storefront
+      - POSTGRES_ROOT_PASSWORD=postgres
+    volumes:
+      - postgresdata:/var/lib/postgres
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8.4.0-alpine
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  smtp4dev:
+    image: rnwood/smtp4dev:latest
+    container_name: smtp4dev
+    ports:
+      - "5000:80"    # Web UI
+      - "25:25"      # SMTP
+    restart: unless-stopped
+    environment:
+      - ServerOptions__HostName=smtp4dev
+      - ServerOptions__Database=./db/smtp4dev.db
+      - RelayOptions__SmtpHost=
+      - RelayOptions__SmtpPort=
+      - RelayOptions__SmtpLogin=
+      - RelayOptions__SmtpPassword=
+      - UiOptions__BasePath=/
+    volumes:
+      - smtp4dev_data:/db
+    networks:
+      - app-network
+
+  volumes:
+    postgres_data:
+    redis_data:
+    smtp4dev_data:
+    pgadmin_data:
+    prometheus_data:
+    grafana_data:
+    static_volume:
+    media_volume:
+
+  networks:
+    app-network:
+      driver: bridge

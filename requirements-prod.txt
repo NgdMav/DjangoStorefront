@@ -69,3 +69,5 @@ brotli==1.2.0
 # Compression
 cffi==2.0.0
 pycparser==2.23
+
+gunicorn==23.0.0
