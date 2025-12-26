@@ -65,8 +65,8 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-if DEBUG:
-    MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
+# if DEBUG:
+#     MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
 
 INTERNAL_IPS = [
     '127.0.0.1',
